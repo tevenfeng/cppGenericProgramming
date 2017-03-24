@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/fengdingwen/Coding/c++/ForwardList/ForwardList.cpp
+ForwardList.h
+/home/fengdingwen/Coding/c++/ForwardList/ForwardList.h
+
+/home/fengdingwen/Coding/c++/ForwardList/ForwardList.h
+ForwardListNode.h
+/home/fengdingwen/Coding/c++/ForwardList/ForwardListNode.h
+
+/home/fengdingwen/Coding/c++/ForwardList/ForwardListNode.cpp
+ForwardListNode.h
+/home/fengdingwen/Coding/c++/ForwardList/ForwardListNode.h
+
+/home/fengdingwen/Coding/c++/ForwardList/ForwardListNode.h
+
+/home/fengdingwen/Coding/c++/ForwardList/main.cpp
+iostream
+-
+ForwardList.h
+/home/fengdingwen/Coding/c++/ForwardList/ForwardList.h
+
