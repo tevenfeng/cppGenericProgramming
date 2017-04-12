@@ -1,4 +1,4 @@
-# Install script for directory: /media/teven/a02ab9d9-8f02-4e91-8bfe-9618f2171066/home/fengdingwen/Coding/c++/CPPGenericProgramming/SimpleJsonParser
+# Install script for directory: /home/fengdingwen/Coding/c++/cppGenericProgramming/SimpleJsonParser
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/media/teven/a02ab9d9-8f02-4e91-8bfe-9618f2171066/home/fengdingwen/Coding/c++/CPPGenericProgramming/SimpleJsonParser/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/fengdingwen/Coding/c++/cppGenericProgramming/SimpleJsonParser/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
