@@ -10,7 +10,7 @@
 #include "Object.h"
 
 class JsonParser {
-    void readChar(string str, int index, char target) {
+    void readChar(string str, int &index, char target) {
         while (str[index] != target) {
             ++index;
         }
@@ -105,20 +105,37 @@ public:
     }
 
     Value readNumber(const string &str, int &p) {
+        Value tmpValue;
+
         bool isPositive = true;
         if (str[p] == '-') {
             isPositive = false;
             readChar(str, p, '-');
         }
+
         string tmpStr = "";
-        float tmpFloat;
+        bool isDouble = false;
         while (str[p] == '.' || isdigit(str[p])) {
             tmpStr.append(1, str[p]);
+            if (str[p] == '.') {
+                isDouble = true;
+            }
             p++;
         }
-        sscanf(tmpStr, "%lf", &tmpFloat);
+        if (isDouble) {
+            float tmpFloat = atof((char *) tmpStr.c_str());
+            if (!isPositive) {
+                tmpFloat = 0 - tmpFloat;
+            }
+            tmpValue = Value(tmpFloat);
+        } else {
+            int tmpInt = atoi((char *) tmpStr.c_str());
+            if (!isPositive) {
+                tmpInt = 0 - tmpInt;
+            }
+            tmpValue = Value(tmpInt);
+        }
 
-        Value tmpValue = Value(tmpFloat);
         return tmpValue;
     }
 };

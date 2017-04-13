@@ -21,7 +21,13 @@ class Value {
     Array valueArray;
     ValueType type;
 public:
+    Value &operator[](const string &key);
+
+    Value &operator[](const int &index);
+
     Value();
+
+    Value(char *v) : valueString(v), type(STRING) {};
 
     Value(string v) : valueString(v), type(STRING) {};
 
@@ -49,6 +55,8 @@ public:
 
     Value &operator=(const string &val);
 
+    Value &operator=(const char *val);
+
     Value &operator=(const float &val);
 
     Value &operator=(const int &val);
@@ -62,6 +70,8 @@ public:
     string toJson();
 
     ValueType getType();
+
+    void pushBack(const Value &val);
 };
 
 

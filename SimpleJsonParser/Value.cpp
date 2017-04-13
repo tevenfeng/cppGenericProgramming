@@ -8,45 +8,96 @@ Value::Value() {
 }
 
 string &Value::toString() {
+    return valueString;
 }
 
 float &Value::toFloat() {
+    return valueFloat;
 }
 
 int &Value::toInt() {
+    return valueInt;
 }
 
 bool &Value::toBool() {
+    return valueBool;
 }
 
 Object &Value::toObject() {
+    return valueObject;
 }
 
 Array &Value::toArray() {
+    return valueArray;
+}
+
+Value &Value::operator[](const string &key) {
+    return this->valueObject[key];
+}
+
+Value &Value::operator[](const int &index) {
+    return this->valueArray[index];
 }
 
 Value &Value::operator=(const string &val) {
+    this->valueString = val;
+    this->type = STRING;
 }
 
 Value &Value::operator=(const float &val) {
+    this->valueFloat = val;
+    this->type = FLOAT;
 }
 
 Value &Value::operator=(const int &val) {
+    this->valueInt = val;
+    this->type = INT;
 }
 
 Value &Value::operator=(const bool &val) {
+    this->valueBool = val;
+    this->type = BOOL;
 }
 
 Value &Value::operator=(const Object &val) {
+    this->valueObject = val;
+    this->type = OBJECT;
 }
 
 Value &Value::operator=(const Array &val) {
+    this->valueArray = val;
+    this->type = ARRAY;
+}
+
+Value &Value::operator=(const char *val) {
+    string tmpStr = val;
+    this->valueString = val;
+    this->type = STRING;
 }
 
 string Value::toJson() {
-    return string();
+    switch (type) {
+        case STRING:
+            return "\"" + valueString + "\"";
+        case INT:
+            return std::to_string(valueInt);
+        case FLOAT:
+            return std::to_string(valueFloat);
+        case BOOL:
+            if (valueBool)
+                return "true";
+            else return "false";
+        case ARRAY:
+            return valueArray.toJson();
+        case OBJECT:
+            return valueObject.toJson();
+    }
 }
 
 ValueType Value::getType() {
     return ValueType();
+}
+
+void Value::pushBack(const Value &val) {
+    this->valueArray.pushBack(val);
 }

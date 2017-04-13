@@ -10,15 +10,30 @@
 
 using std::map;
 using std::string;
+using std::pair;
 
 class Value;
 
 class Object {
-    map<string, Value> obj_map;
+    map<string, Value> objMap;
 public:
     Value &operator[](const string &key);
 
-    int size() const;
+    unsigned long size() const;
+
+    Value find(const string &key);
+
+    void insert(const string &key, const Value &val);
+
+    void erase(const string &key);
+
+    map<string, Value>::iterator begin();
+
+    map<string, Value>::iterator end();
+
+    void clear();
+
+    bool empty();
 
     string toJson();
 };

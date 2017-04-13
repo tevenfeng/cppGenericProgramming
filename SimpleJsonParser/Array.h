@@ -20,6 +20,16 @@ public:
 
     void pushBack(const Value &val);
 
+    vector<Value>::iterator begin();
+
+    vector<Value>::iterator end();
+
+    void clear();
+
+    bool empty();
+
+    unsigned long size();
+
     string toJson();
 };
 

@@ -3,9 +3,17 @@
 
 CMakeFiles/SimpleJsonParser.dir/Array.cpp.o: ../Array.cpp
 CMakeFiles/SimpleJsonParser.dir/Array.cpp.o: ../Array.h
+CMakeFiles/SimpleJsonParser.dir/Array.cpp.o: ../Object.h
+CMakeFiles/SimpleJsonParser.dir/Array.cpp.o: ../Value.h
+CMakeFiles/SimpleJsonParser.dir/Array.cpp.o: ../ValueType.h
 
+CMakeFiles/SimpleJsonParser.dir/JsonParser.cpp.o: ../JsonParser.cpp
+
+CMakeFiles/SimpleJsonParser.dir/Object.cpp.o: ../Array.h
 CMakeFiles/SimpleJsonParser.dir/Object.cpp.o: ../Object.cpp
 CMakeFiles/SimpleJsonParser.dir/Object.cpp.o: ../Object.h
+CMakeFiles/SimpleJsonParser.dir/Object.cpp.o: ../Value.h
+CMakeFiles/SimpleJsonParser.dir/Object.cpp.o: ../ValueType.h
 
 CMakeFiles/SimpleJsonParser.dir/Value.cpp.o: ../Array.h
 CMakeFiles/SimpleJsonParser.dir/Value.cpp.o: ../Object.h
@@ -14,7 +22,11 @@ CMakeFiles/SimpleJsonParser.dir/Value.cpp.o: ../Value.h
 CMakeFiles/SimpleJsonParser.dir/Value.cpp.o: ../ValueType.h
 
 CMakeFiles/SimpleJsonParser.dir/ValueType.cpp.o: ../ValueType.cpp
-CMakeFiles/SimpleJsonParser.dir/ValueType.cpp.o: ../ValueType.h
 
+CMakeFiles/SimpleJsonParser.dir/main.cpp.o: ../Array.h
+CMakeFiles/SimpleJsonParser.dir/main.cpp.o: ../JsonParser.h
+CMakeFiles/SimpleJsonParser.dir/main.cpp.o: ../Object.h
+CMakeFiles/SimpleJsonParser.dir/main.cpp.o: ../Value.h
+CMakeFiles/SimpleJsonParser.dir/main.cpp.o: ../ValueType.h
 CMakeFiles/SimpleJsonParser.dir/main.cpp.o: ../main.cpp
 
