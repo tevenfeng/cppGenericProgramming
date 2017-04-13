@@ -3,8 +3,8 @@
 #include "Object.h"
 #include "JsonParser.h"
 
-using namespace std;
-
+using std::cout;
+using std::endl;
 
 int main() {
 
