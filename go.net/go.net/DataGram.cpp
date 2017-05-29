@@ -7,6 +7,10 @@ string DataGram::toJson()
 	tmpObject["messageType"] = this->messageType;
 	tmpObject["fromIp"] = this->fromIp;
 	tmpObject["toIp"] = this->toIp;
+	if (this->messageType == MessageType::REQUEST)
+	{
+		tmpObject["chessType"] = this->chessType;
+	}
 	if (this->messageType == CHESS)
 	{
 		//tmpObject["owner"] = this->chessInfo.getOwner();

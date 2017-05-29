@@ -11,12 +11,13 @@
 #include <QLayout>
 #include <set>
 #include "ui_gonet.h"
-#include "GameWindow.h"
 #include "Object.h"
 #include "JsonParser.h"
 #include "DataSender.h"
 #include "DataReceiver.h"
 #include "DataGram.h"
+#include "GameWindow.h"
+#include "MessageWindow.h"
 
 class gonet : public QMainWindow
 {
@@ -25,6 +26,10 @@ signals:
 
 public slots:
 	void itemClicked(QModelIndex index);
+
+	void goBtnClicked(bool arg);
+
+	void fiveBtnClicked(bool arg);
 
 public:
 	gonet(QWidget *parent = Q_NULLPTR);
@@ -36,6 +41,8 @@ private:
 	QPushButton *fiveBtn;
 	QGridLayout *layout;
 
+	GameWindow *gameWindow;
+
 	quint16 port = 10086;
 	string localIp;
 	string remoteIp;
@@ -44,8 +51,6 @@ private:
 	QStandardItemModel *standardItemModel;
 
 	std::set<string> *lanList;
-
-	GameWindow *mainWindow;
 
 	string getLocalIp();
 
@@ -60,6 +65,12 @@ private:
 	void sendChessInfo();
 
 	void updateLanListView();
+
+	void receiveOnlineMessage(Object result);
+	void receiveOfflineMessage(Object result);
+	void receiveRequestMessage(Object result);
+	void receiveAgreeMessage(Object result);
+	void receiveRefuseMessage(Object result);
 	
 protected:
 	void closeEvent(QCloseEvent *event);

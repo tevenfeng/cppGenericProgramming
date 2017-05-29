@@ -13,6 +13,7 @@ public:
 	int messageType;
 	string fromIp;
 	string toIp;
+	bool chessType;			// true for go game, false for five-in-a-row game
 	Chess chessInfo;
 
 	string toJson();

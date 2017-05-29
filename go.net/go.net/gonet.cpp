@@ -6,6 +6,7 @@ gonet::gonet(QWidget *parent)
 	ui.setupUi(this);
 	this->setFixedSize(364, 480);
 
+	// init controllers and widgets
 	centralWidget = new QWidget();
 	this->setCentralWidget(centralWidget);
 	lanListView = new QListView(this);
@@ -21,15 +22,57 @@ gonet::gonet(QWidget *parent)
 	layout->addWidget(lanListView, 0, 0, 3, 1);
 	centralWidget->setLayout(layout);
 
+	// get local ip
 	this->localIp = this->getLocalIp();
 
+	// listen to any message from network
 	DataReceiver *infoReceiver = new DataReceiver(this, this->port);
 	infoReceiver->listenToBroadcast();
-
+	// get any message, then go to Action()
 	QObject::connect(infoReceiver, &DataReceiver::dataReady, this, &gonet::Action);
 
 	// set to online, broadcast the online message
 	setOnline();
+
+	QObject::connect(goBtn, &QPushButton::clicked, this, &gonet::goBtnClicked);
+	QObject::connect(fiveBtn, &QPushButton::clicked, this, &gonet::fiveBtnClicked);
+	QObject::connect(lanListView, &QListView::clicked, this, &gonet::itemClicked);
+}
+
+void gonet::goBtnClicked(bool arg)
+{
+	// send a request to the remote ip
+	DataGram *backDataGram = new DataGram();
+	backDataGram->messageType = REQUEST;
+	backDataGram->chessType = true;   // true for go game
+	backDataGram->fromIp = this->localIp;
+	backDataGram->toIp = this->remoteIp;
+	string tmp = backDataGram->toJson();
+	DataSender *onlineMessageSender = new DataSender(this);
+	onlineMessageSender->sendToSpecificClient(
+		QString::fromStdString(this->remoteIp),
+		this->port,
+		tmp.c_str(),
+		tmp.length()
+	);
+}
+
+void gonet::fiveBtnClicked(bool arg)
+{
+	// send a request to the remote ip
+	DataGram *backDataGram = new DataGram();
+	backDataGram->messageType = REQUEST;
+	backDataGram->chessType = false;   // false for five-in-a-row game
+	backDataGram->fromIp = this->localIp;
+	backDataGram->toIp = this->remoteIp;
+	string tmp = backDataGram->toJson();
+	DataSender *onlineMessageSender = new DataSender(this);
+	onlineMessageSender->sendToSpecificClient(
+		QString::fromStdString(this->remoteIp),
+		this->port,
+		tmp.c_str(),
+		tmp.length()
+	);
 }
 
 string gonet::getLocalIp()
@@ -88,37 +131,20 @@ void gonet::Action(string data)
 	std::set<string>::iterator itr;
 	switch (result["messageType"].toInt())
 	{
-	case ONLINE:
-		tmpRemote = result["fromIp"].toString();
-		if (tmpRemote != this->localIp 
-			&& this->lanList->find(tmpRemote) == this->lanList->end())
-		{
-			this->lanList->insert(tmpRemote);
-			updateLanListView();
-
-			// return back local info to source ip
-			DataGram *backDataGram = new DataGram();
-			backDataGram->messageType = ONLINE;
-			backDataGram->fromIp = localIp;
-			backDataGram->toIp = tmpRemote;
-			string tmp = backDataGram->toJson();
-			DataSender *onlineMessageSender = new DataSender(this);
-			onlineMessageSender->sendToSpecificClient(
-				QString::fromStdString(tmpRemote),
-				this->port, 
-				tmp.c_str(), 
-				tmp.length()
-			);
-		}
+	case MessageType::ONLINE:
+		receiveOnlineMessage(result);
 		break;
-	case OFFLINE:
-		tmpRemote = result["fromIp"].toString();
-		itr = this->lanList->find(tmpRemote);
-		if (itr != this->lanList->end())
-		{
-			this->lanList->erase(itr);
-		}
-		updateLanListView();
+	case MessageType::OFFLINE:
+		receiveOfflineMessage(result);
+		break;
+	case MessageType::REQUEST:
+		receiveRequestMessage(result);
+		break;
+	case MessageType::REFUSE:
+		receiveRefuseMessage(result);
+		break;
+	case MessageType::AGREE:
+		receiveAgreeMessage(result);
 		break;
 	default:
 		break;
@@ -134,6 +160,69 @@ void gonet::updateLanListView()
 		QStandardItem *item = new QStandardItem(remote);
 		standardItemModel->appendRow(item);
 	}
+}
+
+void gonet::receiveOnlineMessage(Object result)
+{
+	string tmpRemote = result["fromIp"].toString();
+	if (tmpRemote != this->localIp
+		&& this->lanList->find(tmpRemote) == this->lanList->end())
+	{
+		this->lanList->insert(tmpRemote);
+		updateLanListView();
+
+		// return back local info to source ip
+		DataGram *backDataGram = new DataGram();
+		backDataGram->messageType = ONLINE;
+		backDataGram->fromIp = localIp;
+		backDataGram->toIp = tmpRemote;
+		string tmp = backDataGram->toJson();
+		DataSender *onlineMessageSender = new DataSender(this);
+		onlineMessageSender->sendToSpecificClient(
+			QString::fromStdString(tmpRemote),
+			this->port,
+			tmp.c_str(),
+			tmp.length()
+		);
+	}
+}
+
+void gonet::receiveOfflineMessage(Object result)
+{
+	string tmpRemote = result["fromIp"].toString();
+	auto itr = this->lanList->find(tmpRemote);
+	if (itr != this->lanList->end())
+	{
+		this->lanList->erase(itr);
+	}
+	updateLanListView();
+}
+
+// received a request from remote, 
+// display a message to choose agree or refuse
+void gonet::receiveRequestMessage(Object result)
+{
+	string tmpRemote = result["fromIp"].toString();
+
+	MessageWindow *requestedWindow = new MessageWindow(result["messageType"].toInt(),
+		result["chessType"].toBool(), tmpRemote, this->localIp, this->port, this);
+	requestedWindow->show();
+}
+
+// Agreed, open game window to play with remote player
+void gonet::receiveAgreeMessage(Object result)
+{
+
+}
+
+// Refused, just show a message window
+void gonet::receiveRefuseMessage(Object result)
+{
+	string tmpRemote = result["fromIp"].toString();
+
+	MessageWindow *refusedWindow = new MessageWindow(result["messageType"].toInt(),
+		result["chessType"].toBool(), tmpRemote, this->localIp, this->port, this);
+	refusedWindow->show();
 }
 
 void gonet::closeEvent(QCloseEvent * event)

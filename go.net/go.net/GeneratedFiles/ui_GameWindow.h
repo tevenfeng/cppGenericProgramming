@@ -13,8 +13,8 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QDialog>
 #include <QtWidgets/QHeaderView>
-#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
@@ -22,7 +22,7 @@ class Ui_GameWindow
 {
 public:
 
-    void setupUi(QWidget *GameWindow)
+    void setupUi(QDialog *GameWindow)
     {
         if (GameWindow->objectName().isEmpty())
             GameWindow->setObjectName(QStringLiteral("GameWindow"));
@@ -33,7 +33,7 @@ public:
         QMetaObject::connectSlotsByName(GameWindow);
     } // setupUi
 
-    void retranslateUi(QWidget *GameWindow)
+    void retranslateUi(QDialog *GameWindow)
     {
         GameWindow->setWindowTitle(QApplication::translate("GameWindow", "GameWindow", Q_NULLPTR));
     } // retranslateUi
