@@ -34,14 +34,14 @@ public slots:
 public:
 	gonet(QWidget *parent = Q_NULLPTR);
 
+	GameWindow *gameWindow;
+
 private:
 	Ui::gonetClass ui;
 	QWidget *centralWidget;
 	QPushButton *goBtn;
 	QPushButton *fiveBtn;
 	QGridLayout *layout;
-
-	GameWindow *gameWindow;
 
 	quint16 port = 10086;
 	string localIp;

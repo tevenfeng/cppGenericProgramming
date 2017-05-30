@@ -73,7 +73,6 @@ void MessageWindow::refuseBtnClicked(bool arg)
 	// send a refuse message to remote
 	DataGram *backDataGram = new DataGram();
 	backDataGram->messageType = REFUSE;
-	backDataGram->chessType = true;   // true for go game
 	backDataGram->fromIp = this->localIp;
 	backDataGram->toIp = this->fromIp;
 	string tmp = backDataGram->toJson();
@@ -90,5 +89,20 @@ void MessageWindow::refuseBtnClicked(bool arg)
 
 void MessageWindow::agreeBtnClicked(bool arg)
 {
+	// send a agree message to remote
+	DataGram *backDataGram = new DataGram();
+	backDataGram->messageType = AGREE;
+	backDataGram->chessType = this->chessType;
+	backDataGram->fromIp = this->localIp;
+	backDataGram->toIp = this->fromIp;
+	string tmp = backDataGram->toJson();
+	DataSender *onlineMessageSender = new DataSender(this);
+	onlineMessageSender->sendToSpecificClient(
+		QString::fromStdString(this->fromIp),
+		this->port,
+		tmp.c_str(),
+		tmp.length()
+	);
 
+	this->close();
 }
