@@ -18,7 +18,7 @@ void DataReceiver::listenToSpecificRemote(std::string remoteIp)
 {
 	socket = new QUdpSocket(this);
 	host = new QHostAddress(QString::fromStdString(remoteIp));
-	socket->bind(*host, port);
+	socket->bind(*host, port , QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
 
 	connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
 }
@@ -30,7 +30,18 @@ void DataReceiver::read()
 	socket->readDatagram(data.data(), data.size());
 
 	std::string str(data.data(), data.size());
-	emit dataReady(str);
+
+	JsonParser *tmpParser = new JsonParser();
+	int p = 0;
+	Object result = tmpParser->readObject(str, p);
+
+	if (result["messageType"].toInt() == 5)
+	{
+		emit chessDataReady(str);
+	}
+	else {
+		emit dataReady(str);
+	}
 }
 
 DataReceiver::~DataReceiver()

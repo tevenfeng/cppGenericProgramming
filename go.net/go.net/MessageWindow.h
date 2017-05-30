@@ -15,7 +15,11 @@ using std::string;
 class MessageWindow : public QDialog
 {
 	Q_OBJECT
-public slots:
+		signals :
+	// chessType: true for go game, false for five-in-a-row game
+	void gameReady(string remoteIp, string localIp, bool chessType);
+
+	public slots:
 	void refuseBtnClicked(bool arg);
 
 	void agreeBtnClicked(bool arg);

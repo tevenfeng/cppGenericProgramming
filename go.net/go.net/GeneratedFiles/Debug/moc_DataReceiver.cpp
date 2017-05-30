@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_DataReceiver_t {
-    QByteArrayData data[6];
-    char stringdata0[45];
+    QByteArrayData data[7];
+    char stringdata0[60];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,11 +36,12 @@ QT_MOC_LITERAL(1, 13, 9), // "dataReady"
 QT_MOC_LITERAL(2, 23, 0), // ""
 QT_MOC_LITERAL(3, 24, 11), // "std::string"
 QT_MOC_LITERAL(4, 36, 3), // "str"
-QT_MOC_LITERAL(5, 40, 4) // "read"
+QT_MOC_LITERAL(5, 40, 14), // "chessDataReady"
+QT_MOC_LITERAL(6, 55, 4) // "read"
 
     },
     "DataReceiver\0dataReady\0\0std::string\0"
-    "str\0read"
+    "str\0chessDataReady\0read"
 };
 #undef QT_MOC_LITERAL
 
@@ -50,20 +51,22 @@ static const uint qt_meta_data_DataReceiver[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
+       2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   24,    2, 0x06 /* Public */,
+       1,    1,   29,    2, 0x06 /* Public */,
+       5,    1,   32,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       5,    0,   27,    2, 0x0a /* Public */,
+       6,    0,   35,    2, 0x0a /* Public */,
 
  // signals: parameters
+    QMetaType::Void, 0x80000000 | 3,    4,
     QMetaType::Void, 0x80000000 | 3,    4,
 
  // slots: parameters
@@ -79,7 +82,8 @@ void DataReceiver::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->dataReady((*reinterpret_cast< std::string(*)>(_a[1]))); break;
-        case 1: _t->read(); break;
+        case 1: _t->chessDataReady((*reinterpret_cast< std::string(*)>(_a[1]))); break;
+        case 2: _t->read(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -89,6 +93,13 @@ void DataReceiver::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
             typedef void (DataReceiver::*_t)(std::string );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&DataReceiver::dataReady)) {
                 *result = 0;
+                return;
+            }
+        }
+        {
+            typedef void (DataReceiver::*_t)(std::string );
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&DataReceiver::chessDataReady)) {
+                *result = 1;
                 return;
             }
         }
@@ -120,13 +131,13 @@ int DataReceiver::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 3)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }
@@ -136,6 +147,13 @@ void DataReceiver::dataReady(std::string _t1)
 {
     void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void DataReceiver::chessDataReady(std::string _t1)
+{
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

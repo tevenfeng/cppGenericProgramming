@@ -20,14 +20,16 @@ string DataGram::toJson()
 		tmpObject["position"]["x"] = this->chessInfo.getX();
 		tmpObject["position"]["y"] = this->chessInfo.getY();
 
-		if (this->chessInfo.getOwner() == BLACK)
-		{
-			tmpObject["owner"] = "BLACK";
-		}
-		else
-		{
-			tmpObject["owner"] = "WHITE";
-		}
+		//if (this->chessInfo.getOwner() == BLACK)
+		//{
+		//	tmpObject["owner"] = "BLACK";
+		//}
+		//else
+		//{
+		//	tmpObject["owner"] = "WHITE";
+		//}
+
+		tmpObject["owner"] = this->chessInfo.getOwner();
 	}
 
 	string tmpResult = tmpObject.toJson();

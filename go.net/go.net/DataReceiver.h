@@ -2,6 +2,7 @@
 #include <QObject>
 #include <QtNetwork>
 #include <string>
+#include "JsonParser.h"
 
 class DataReceiver : public QObject
 {
@@ -11,6 +12,7 @@ public slots:
 
 signals:
 	void dataReady(std::string str);
+	void chessDataReady(std::string str);
 public:
 	DataReceiver(QObject *parent, quint16 port);
 	~DataReceiver();

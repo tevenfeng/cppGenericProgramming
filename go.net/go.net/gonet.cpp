@@ -26,7 +26,7 @@ gonet::gonet(QWidget *parent)
 	this->localIp = this->getLocalIp();
 
 	// listen to any message from network
-	DataReceiver *infoReceiver = new DataReceiver(this, this->port);
+	infoReceiver = new DataReceiver(this, this->port);
 	infoReceiver->listenToBroadcast();
 	// get any message, then go to Action()
 	QObject::connect(infoReceiver, &DataReceiver::dataReady, this, &gonet::Action);
@@ -84,7 +84,7 @@ string gonet::getLocalIp()
 	{
 		if (address.protocol() == QAbstractSocket::IPv4Protocol)
 		{
-			if (address.toString().contains("127.0."))
+			if (address.toString().contains("127.0.") || address.toString().contains("169."))
 			{
 				continue;
 			}
@@ -128,7 +128,7 @@ void gonet::Action(string data)
 	Object result = tmpParser->readObject(data, p);
 
 	string tmpRemote;
-	std::set<string>::iterator itr;
+	//std::set<string>::iterator itr;
 	switch (result["messageType"].toInt())
 	{
 	case MessageType::ONLINE:
@@ -204,15 +204,30 @@ void gonet::receiveRequestMessage(Object result)
 {
 	string tmpRemote = result["fromIp"].toString();
 
-	MessageWindow *requestedWindow = new MessageWindow(result["messageType"].toInt(),
+	requestedWindow = new MessageWindow(result["messageType"].toInt(),
 		result["chessType"].toBool(), tmpRemote, this->localIp, this->port, this);
 	requestedWindow->show();
+
+	QObject::connect(requestedWindow, &MessageWindow::gameReady, this, &gonet::agreeToPlay);
 }
 
 // Agreed, open game window to play with remote player
 void gonet::receiveAgreeMessage(Object result)
 {
+	// remote player agree to play
+	bool chessType;
 
+	string tmpLocalIp = result["toIp"].toString();
+	string tmpRemoteIp = result["fromIp"].toString();
+	bool tmpChessType = result["chessType"].toBool();
+
+	this->gameWindow = new GameWindow(tmpLocalIp, tmpRemoteIp,  tmpChessType, WHITE, this);
+
+	this->hide();
+	this->gameWindow->show();
+	this->setOffline();
+
+	QObject::connect(gameWindow, &GameWindow::gameWindowClose, this, &gonet::afterGameWindowClosed);
 }
 
 // Refused, just show a message window
@@ -220,9 +235,27 @@ void gonet::receiveRefuseMessage(Object result)
 {
 	string tmpRemote = result["fromIp"].toString();
 
-	MessageWindow *refusedWindow = new MessageWindow(result["messageType"].toInt(),
+	refusedWindow = new MessageWindow(result["messageType"].toInt(),
 		result["chessType"].toBool(), tmpRemote, this->localIp, this->port, this);
 	refusedWindow->show();
+}
+
+void gonet::agreeToPlay(string remoteIp, string localIp, bool chessType)
+{
+	// agree to play, set to white, and setOffline
+	this->gameWindow = new GameWindow(localIp, remoteIp,  chessType, BLACK, this);
+
+	this->hide();
+	this->gameWindow->show();
+	this->setOffline();
+
+	QObject::connect(gameWindow, &GameWindow::gameWindowClose, this, &gonet::afterGameWindowClosed);
+}
+
+void gonet::afterGameWindowClosed()
+{
+	this->show();
+	this->setOnline();
 }
 
 void gonet::closeEvent(QCloseEvent * event)

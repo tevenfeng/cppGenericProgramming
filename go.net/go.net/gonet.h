@@ -22,19 +22,25 @@
 class gonet : public QMainWindow
 {
 	Q_OBJECT
-signals:
+signals :
 
-public slots:
+public slots :
+
 	void itemClicked(QModelIndex index);
 
 	void goBtnClicked(bool arg);
 
 	void fiveBtnClicked(bool arg);
 
+	// chessType: true for go game, false for five-in-a-row game
+	void agreeToPlay(string remoteIp, string localIp, bool chessType);
+
+	void afterGameWindowClosed();
+
+	void Action(string data);
+
 public:
 	gonet(QWidget *parent = Q_NULLPTR);
-
-	GameWindow *gameWindow;
 
 private:
 	Ui::gonetClass ui;
@@ -42,6 +48,12 @@ private:
 	QPushButton *goBtn;
 	QPushButton *fiveBtn;
 	QGridLayout *layout;
+
+	DataReceiver *infoReceiver;
+
+	GameWindow *gameWindow;
+	MessageWindow *requestedWindow;
+	MessageWindow *refusedWindow;
 
 	quint16 port = 10086;
 	string localIp;
@@ -60,8 +72,6 @@ private:
 
 	void broadCasting();
 
-	void Action(string data);
-
 	void sendChessInfo();
 
 	void updateLanListView();
@@ -71,7 +81,7 @@ private:
 	void receiveRequestMessage(Object result);
 	void receiveAgreeMessage(Object result);
 	void receiveRefuseMessage(Object result);
-	
+
 protected:
 	void closeEvent(QCloseEvent *event);
 };

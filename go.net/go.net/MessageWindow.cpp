@@ -104,5 +104,7 @@ void MessageWindow::agreeBtnClicked(bool arg)
 		tmp.length()
 	);
 
+	emit gameReady(this->fromIp, this->localIp, this->chessType);
+
 	this->close();
 }
