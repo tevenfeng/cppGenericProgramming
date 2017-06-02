@@ -252,12 +252,16 @@ void gonet::agreeToPlay(string remoteIp, string localIp, bool chessType)
 	QObject::connect(gameWindow, &GameWindow::gameWindowClose, this, &gonet::afterGameWindowClosed);
 }
 
+// when the gaming window closed
+// show the main window and set to online
 void gonet::afterGameWindowClosed()
 {
 	this->show();
 	this->setOnline();
 }
 
+
+// when closing the application(getting offline), tell everyone
 void gonet::closeEvent(QCloseEvent * event)
 {
 	this->setOffline();

@@ -4,6 +4,7 @@
 #include <vector>
 #include <QDialog>
 #include <QPainter>
+#include <QLabel>
 #include <QMouseEvent>
 #include "ui_GameWindow.h"
 #include "Owner.h"
@@ -33,8 +34,7 @@ private:
 	Ui::GameWindow ui;
 	QPainter *paint;
 
-	//DataSender *dataSender;
-	//DataReceiver *dataReceiver;
+	QLabel *remotePlayerLabel, *localPlayerLabel, *remoteIpLabel, *localIpLabel;
 
 	static const int WINDOW_WIDTH = 960;
 	static const int WINDOW_HEIGHT = 688;
@@ -43,19 +43,23 @@ private:
 	static const int FIELD_GRID_NUMBER = 18;
 	static const int FIELD_GRID_WIDTH = 36;
 	static const int FIELD_OFFSET_X = 20, FIELD_OFFSET_Y = 20;
+
+	// field bounding limits
 	static const int FIELD_LEFT_BOUND = FIELD_OFFSET_X;
 	static const int FIELD_RIGHT_BOUND = FIELD_OFFSET_X * 2 + FIELD_GRID_NUMBER * FIELD_GRID_WIDTH;
 	static const int FIELD_TOP_BOUND = FIELD_OFFSET_Y;
 	static const int FIELD_BOTTOM_BOUND = FIELD_OFFSET_Y * 2 + FIELD_GRID_NUMBER * FIELD_GRID_WIDTH;
 
+	// chess radius
 	static const int CHESS_RADIUS = (FIELD_GRID_WIDTH / 2 - 3) * 2;
 
 	std::vector<Chess> *allChesses;
 	Owner field[FIELD_GRID_NUMBER + 1][FIELD_GRID_NUMBER + 1];
+	int countingForFive[FIELD_GRID_NUMBER + 1][FIELD_GRID_NUMBER + 1];
 
-	bool chessType;
+	bool chessType;									// true for go, false for five-in-a-row
 	Owner currentTurn = BLACK;
-	Owner localChessOwner;
+	Owner localChessOwner;							// black or white chess "I" am holding
 
 	string localIp;
 	string remoteIp;
@@ -68,9 +72,17 @@ private:
 
 	void changeTurn();								// change the turn between the two candidates
 
+	void showTurn();								// function to draw a label to show whose turn it is
+
 	void reset();									// restart the game
 
-	void receiveChess(Object result);
+	void receiveChess(Object result);				// function after receiving chess info from remote
+
+	// function to draw the two players information 
+	// on the right side of the field
+	void drawDisplayer();
+
+	bool isFiveSuccess(int x, int y);
 
 protected:
 	void closeEvent(QCloseEvent *event);

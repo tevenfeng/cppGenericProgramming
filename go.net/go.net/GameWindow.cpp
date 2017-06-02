@@ -25,6 +25,8 @@ GameWindow::GameWindow(string localIp, string remoteIp, bool chessType, Owner lo
 	this->chessType = chessType;
 	this->port = 10087;
 
+	drawDisplayer();
+
 	DataReceiver *dataReceiver;
 	dataReceiver = new DataReceiver(this, this->port);
 	//dataReceiver->listenToSpecificRemote(this->remoteIp);
@@ -50,7 +52,7 @@ void GameWindow::paintEvent(QPaintEvent * e)
 	int field_length = FIELD_OFFSET_X + FIELD_GRID_NUMBER * FIELD_GRID_WIDTH;
 	paint->drawRect(FIELD_OFFSET_X / 2, FIELD_OFFSET_Y / 2, field_length, field_length);
 
-	// draw lines
+	// draw field grids
 	this->paint->setPen(QPen(Qt::black, 2, Qt::SolidLine));
 	for (int i = 0; i < FIELD_GRID_NUMBER + 1; i++)
 	{
@@ -70,6 +72,9 @@ void GameWindow::paintEvent(QPaintEvent * e)
 		drawSingleChess(*itr);
 	}
 
+	// draw a chess in the display area to show whose turn it is
+	showTurn();
+
 	this->paint->end();
 }
 
@@ -87,6 +92,9 @@ void GameWindow::drawStarPoints()
 	this->paint->drawEllipse(FIELD_OFFSET_X + 15 * FIELD_GRID_WIDTH - 5, FIELD_OFFSET_X + 15 * FIELD_GRID_WIDTH - 5, 10, 10);
 }
 
+// click mouse and get the position of the cursor
+// and then calculate the x and y of the chess
+// then send these information to the remote player
 void GameWindow::mousePressEvent(QMouseEvent * e)
 {
 	int row = 0;
@@ -95,6 +103,8 @@ void GameWindow::mousePressEvent(QMouseEvent * e)
 	int tmpX = e->x();
 	int tmpY = e->y();
 
+	// if it is 'my' turn
+	// else do nothing
 	if (this->localChessOwner == this->currentTurn)
 	{
 		// calculate the row and column of the chess
@@ -137,16 +147,24 @@ void GameWindow::mousePressEvent(QMouseEvent * e)
 			//dataSender->sendToSpecificClient(QString::fromStdString(this->remoteIp), this->port, tmpStr.c_str(), tmpStr.length());
 			dataSender->broadcast(this->port, tmpStr.c_str(), tmpStr.length());
 
+			// Turn to the other player
+			changeTurn();
+
 			// repaint
 			this->repaint();
 
-			// Turn to the other candidate
-			changeTurn();
+			// codes for checking win-or-lose in five-in-a-row game
+			if (this->chessType = false)
+			{
+				// false means five-in-a-row
+			}
 
 		} // if click position not inside the field, do nothing
 	}
 }
 
+// function to draw a single chess on the field 
+// according to chess info
 void GameWindow::drawSingleChess(Chess tmpChess)
 {
 
@@ -164,6 +182,7 @@ void GameWindow::drawSingleChess(Chess tmpChess)
 	this->paint->drawEllipse(chessLocationX, chessLocationY, CHESS_RADIUS, CHESS_RADIUS);
 }
 
+// change the turn between the two players
 void GameWindow::changeTurn()
 {
 	if (this->currentTurn == WHITE)
@@ -176,18 +195,53 @@ void GameWindow::changeTurn()
 	}
 }
 
+// function to draw a chess in the display area to show whose turn it is
+void GameWindow::showTurn()
+{
+	if (localChessOwner == BLACK)
+	{
+		if (currentTurn == BLACK)
+		{
+			this->paint->setBrush(QBrush(Qt::black, Qt::SolidPattern));
+			this->paint->drawEllipse(FIELD_RIGHT_BOUND + 40, FIELD_BOTTOM_BOUND - 70, CHESS_RADIUS, CHESS_RADIUS);
+		}
+		else
+		{
+			this->paint->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+			this->paint->drawEllipse(FIELD_RIGHT_BOUND + 40, 100, CHESS_RADIUS, CHESS_RADIUS);
+		}
+	}
+	else
+	{
+		if (currentTurn == BLACK)
+		{
+			this->paint->setBrush(QBrush(Qt::black, Qt::SolidPattern));
+			this->paint->drawEllipse(FIELD_RIGHT_BOUND + 40, 100, CHESS_RADIUS, CHESS_RADIUS);
+		}
+		else
+		{
+			this->paint->setBrush(QBrush(Qt::white, Qt::SolidPattern));
+			this->paint->drawEllipse(FIELD_RIGHT_BOUND + 40, FIELD_BOTTOM_BOUND - 70, CHESS_RADIUS, CHESS_RADIUS);
+		}
+	}
+}
+
+// restart the game
+// means clearing all things
 void GameWindow::reset()
 {
 	memset(this->field, 0, sizeof(this->field));
-
+	memset(this->countingForFive, 0, sizeof(this->countingForFive));
 	this->allChesses->clear();
 }
 
+// emit signal that game window has been closed 
 void GameWindow::closeEvent(QCloseEvent * event)
 {
 	emit gameWindowClose();
 }
 
+// action after receiving chess info from remote
 void GameWindow::chessAction(string data)
 {
 	JsonParser *tmpParser = new JsonParser();
@@ -207,11 +261,11 @@ void GameWindow::chessAction(string data)
 	}
 }
 
+// receive chess info
+// draw the chess
+// change the turn
 void GameWindow::receiveChess(Object result)
 {
-	// receive chess
-	// draw the chess
-	// change the turn
 	if ((Owner)result["owner"].toInt() == currentTurn)
 	{
 		Chess currentChessToDraw = Chess();
@@ -224,8 +278,38 @@ void GameWindow::receiveChess(Object result)
 		this->allChesses->push_back(currentChessToDraw);
 		this->field[result["position"]["y"].toInt()][result["position"]["x"].toInt()] = currentTurn;
 
+		changeTurn();
 		this->repaint();
 
-		changeTurn();
+		// codes for checking win-or-lose in five-in-a-row game
+		if (this->chessType = false)
+		{
+			// false means five-in-a-row
+		}
 	}
+}
+
+void GameWindow::drawDisplayer()
+{
+	this->localPlayerLabel = new QLabel("Me: ", this);
+	this->localIpLabel = new QLabel(QString::fromStdString(this->localIp), this);
+	this->remotePlayerLabel = new QLabel("Remote: ", this);
+	this->remoteIpLabel = new QLabel(QString::fromStdString(this->remoteIp), this);
+
+	QFont myFont = QFont("Arial", QFont::Bold);
+	myFont.setPointSize(16);
+	this->remotePlayerLabel->setGeometry(QRect(FIELD_RIGHT_BOUND + 20, 40, 300, 30));
+	this->remoteIpLabel->setGeometry(QRect(FIELD_RIGHT_BOUND + 20, 70, 300, 30));
+	this->remotePlayerLabel->setFont(myFont);
+	this->remoteIpLabel->setFont(myFont);
+
+	this->localPlayerLabel->setGeometry(QRect(FIELD_RIGHT_BOUND + 20, FIELD_BOTTOM_BOUND - 130, 400, 30));
+	this->localIpLabel->setGeometry(QRect(FIELD_RIGHT_BOUND + 20, FIELD_BOTTOM_BOUND - 100, 400, 30));
+	this->localPlayerLabel->setFont(myFont);
+	this->localIpLabel->setFont(myFont);
+}
+
+bool GameWindow::isFiveSuccess(int x, int y)
+{
+	return false;
 }
