@@ -14,6 +14,8 @@
 #include "Object.h"
 #include "JsonParser.h"
 #include "DataGram.h"
+#include "MessageWindow.h"
+#include "ResultNotification.h"
 
 using std::string;
 
@@ -24,6 +26,10 @@ signals :
 	void gameWindowClose();
 public slots:
 	void chessAction(string data);
+
+	void restartGame();
+
+	void exitGame();
 
 public:
 	GameWindow(QWidget *parent = Q_NULLPTR);
@@ -53,9 +59,10 @@ private:
 	// chess radius
 	static const int CHESS_RADIUS = (FIELD_GRID_WIDTH / 2 - 3) * 2;
 
+	bool isGameOver;
+
 	std::vector<Chess> *allChesses;
 	Owner field[FIELD_GRID_NUMBER + 1][FIELD_GRID_NUMBER + 1];
-	int countingForFive[FIELD_GRID_NUMBER + 1][FIELD_GRID_NUMBER + 1];
 
 	bool chessType;									// true for go, false for five-in-a-row
 	Owner currentTurn = BLACK;
@@ -82,7 +89,8 @@ private:
 	// on the right side of the field
 	void drawDisplayer();
 
-	bool isFiveSuccess(int x, int y);
+	bool isFiveSuccess(int row, int col, Owner owner);
+	bool isInField(int row, int col);
 
 protected:
 	void closeEvent(QCloseEvent *event);

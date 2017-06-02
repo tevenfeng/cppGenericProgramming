@@ -1,5 +1,15 @@
 #include "GameWindow.h"
 
+void GameWindow::restartGame()
+{
+	this->reset();
+}
+
+void GameWindow::exitGame()
+{
+	this->close();
+}
+
 GameWindow::GameWindow(QWidget *parent)
 	: QDialog(parent)
 {
@@ -26,6 +36,8 @@ GameWindow::GameWindow(string localIp, string remoteIp, bool chessType, Owner lo
 	this->port = 10087;
 
 	drawDisplayer();
+
+	this->isGameOver = false;
 
 	DataReceiver *dataReceiver;
 	dataReceiver = new DataReceiver(this, this->port);
@@ -105,7 +117,7 @@ void GameWindow::mousePressEvent(QMouseEvent * e)
 
 	// if it is 'my' turn
 	// else do nothing
-	if (this->localChessOwner == this->currentTurn)
+	if (this->isGameOver == false && this->localChessOwner == this->currentTurn)
 	{
 		// calculate the row and column of the chess
 		if (tmpX >= FIELD_LEFT_BOUND && tmpX <= FIELD_RIGHT_BOUND && tmpY >= FIELD_TOP_BOUND && tmpY <= FIELD_BOTTOM_BOUND)
@@ -138,9 +150,11 @@ void GameWindow::mousePressEvent(QMouseEvent * e)
 			chessDataGram->chessInfo = Chess();
 			chessDataGram->chessInfo.setX(column);
 			chessDataGram->chessInfo.setY(row);
-			chessDataGram->chessInfo.setOwner(currentTurn);
+			chessDataGram->chessInfo.setOwner(this->currentTurn);
 
 			string tmpStr = chessDataGram->toJson();
+
+			Owner tmpOwner = this->currentTurn;
 
 			DataSender *dataSender;
 			dataSender = new DataSender(this);
@@ -154,9 +168,18 @@ void GameWindow::mousePressEvent(QMouseEvent * e)
 			this->repaint();
 
 			// codes for checking win-or-lose in five-in-a-row game
-			if (this->chessType = false)
+			if (this->chessType == false)
 			{
 				// false means five-in-a-row
+				if (isFiveSuccess(row, column, tmpOwner))
+				{
+					this->isGameOver = true;
+					ResultNotification *resultWindow = new ResultNotification(tmpOwner, this->localChessOwner);
+					resultWindow->show();
+
+					QObject::connect(resultWindow, &ResultNotification::restartGame, this, &GameWindow::restartGame);
+					QObject::connect(resultWindow, &ResultNotification::exitGame, this, &GameWindow::exitGame);
+				}
 			}
 
 		} // if click position not inside the field, do nothing
@@ -231,8 +254,8 @@ void GameWindow::showTurn()
 void GameWindow::reset()
 {
 	memset(this->field, 0, sizeof(this->field));
-	memset(this->countingForFive, 0, sizeof(this->countingForFive));
 	this->allChesses->clear();
+	this->isGameOver = false;
 }
 
 // emit signal that game window has been closed 
@@ -282,9 +305,19 @@ void GameWindow::receiveChess(Object result)
 		this->repaint();
 
 		// codes for checking win-or-lose in five-in-a-row game
-		if (this->chessType = false)
+		if (this->chessType == false)
 		{
 			// false means five-in-a-row
+			if (isFiveSuccess(result["position"]["y"].toInt(), result["position"]["x"].toInt(), (Owner)result["owner"].toInt()))
+			{
+				this->isGameOver = true;
+
+				ResultNotification *resultWindow = new ResultNotification((Owner)result["owner"].toInt(), this->localChessOwner);
+				resultWindow->show();
+
+				QObject::connect(resultWindow, &ResultNotification::restartGame, this, &GameWindow::restartGame);
+				QObject::connect(resultWindow, &ResultNotification::exitGame, this, &GameWindow::exitGame);
+			}
 		}
 	}
 }
@@ -309,7 +342,44 @@ void GameWindow::drawDisplayer()
 	this->localIpLabel->setFont(myFont);
 }
 
-bool GameWindow::isFiveSuccess(int x, int y)
+bool GameWindow::isFiveSuccess(int row, int col, Owner owner)
 {
+	int TempRow, TempCol;
+	int count = 1;
+	for (int direct = 0; direct <= 3; direct++) {
+		for (int i = -4; i <= 4; i++) {
+			if (i == 0)
+				continue;
+			switch (direct) {
+			case 0:
+				TempRow = row + i;
+				TempCol = col;
+				break;
+			case 1:
+				TempRow = row;
+				TempCol = col + i;
+				break;
+			case 2:
+				TempRow = row + i;
+				TempCol = col - i;
+				break;
+			case 3:
+				TempRow = row - i;
+				TempCol = col - i;
+				break;
+			}
+			if (isInField(TempRow, TempCol) && field[TempRow][TempCol] != EMPTY && field[TempRow][TempCol] == owner)
+				count++;
+			else
+				count = 1;
+			if (count == 5)
+				return true;
+		}
+	}
 	return false;
+}
+
+bool GameWindow::isInField(int row, int col)
+{
+	return (row >= 0 && row <= FIELD_GRID_NUMBER && col >= 0 && col < FIELD_GRID_NUMBER);
 }
