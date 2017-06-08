@@ -41,8 +41,8 @@ GameWindow::GameWindow(string localIp, string remoteIp, bool chessType, Owner lo
 
 	DataReceiver *dataReceiver;
 	dataReceiver = new DataReceiver(this, this->port);
-	//dataReceiver->listenToSpecificRemote(this->remoteIp);
-	dataReceiver->listenToBroadcast();
+	dataReceiver->listenToSpecificRemote(this->localIp);
+	//dataReceiver->listenToBroadcast();
 
 	QObject::connect(dataReceiver, &DataReceiver::chessDataReady, this, &GameWindow::chessAction);
 }
@@ -158,8 +158,8 @@ void GameWindow::mousePressEvent(QMouseEvent * e)
 
 			DataSender *dataSender;
 			dataSender = new DataSender(this);
-			//dataSender->sendToSpecificClient(QString::fromStdString(this->remoteIp), this->port, tmpStr.c_str(), tmpStr.length());
-			dataSender->broadcast(this->port, tmpStr.c_str(), tmpStr.length());
+			dataSender->sendToSpecificClient(QString::fromStdString(this->remoteIp), this->port, tmpStr.c_str(), tmpStr.length());
+			//dataSender->broadcast(this->port, tmpStr.c_str (), tmpStr.length());
 
 			// Turn to the other player
 			changeTurn();
