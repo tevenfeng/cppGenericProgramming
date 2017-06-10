@@ -18,6 +18,7 @@ public:
 	~DataReceiver();
 	void listenToBroadcast();
 	void listenToSpecificRemote(std::string remoteIp);
+	void stopListen();
 private:
 	QObject *parent;
 	QUdpSocket *socket;

@@ -23,6 +23,11 @@ void DataReceiver::listenToSpecificRemote(std::string remoteIp)
 	connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
 }
 
+void DataReceiver::stopListen() 
+{
+	socket->abort();
+}
+
 void DataReceiver::read()
 {
 	QByteArray data;

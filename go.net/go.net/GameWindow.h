@@ -68,6 +68,8 @@ private:
 	Owner currentTurn = BLACK;
 	Owner localChessOwner;							// black or white chess "I" am holding
 
+	DataReceiver *dataReceiver;
+
 	string localIp;
 	string remoteIp;
 	quint16 port = 10087;

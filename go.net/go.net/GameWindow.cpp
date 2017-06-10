@@ -39,7 +39,6 @@ GameWindow::GameWindow(string localIp, string remoteIp, bool chessType, Owner lo
 
 	this->isGameOver = false;
 
-	DataReceiver *dataReceiver;
 	dataReceiver = new DataReceiver(this, this->port);
 	dataReceiver->listenToSpecificRemote(this->localIp);
 	//dataReceiver->listenToBroadcast();
@@ -261,6 +260,10 @@ void GameWindow::reset()
 // emit signal that game window has been closed 
 void GameWindow::closeEvent(QCloseEvent * event)
 {
+	this->dataReceiver->stopListen();
+
+	delete this->dataReceiver;
+
 	emit gameWindowClose();
 }
 
