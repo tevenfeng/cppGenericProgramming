@@ -265,6 +265,7 @@ void gonet::afterGameWindowClosed()
 void gonet::closeEvent(QCloseEvent * event)
 {
 	this->setOffline();
+	this->infoReceiver->stopListen();
 }
 
 void gonet::itemClicked(QModelIndex index)
