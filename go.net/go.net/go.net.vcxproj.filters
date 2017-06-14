@@ -80,6 +80,9 @@
     <ClCompile Include="ResultNotification.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GoChecker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -192,6 +195,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_ResultNotification.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GoChecker.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -35,6 +35,8 @@ GameWindow::GameWindow(string localIp, string remoteIp, bool chessType, Owner lo
 	this->chessType = chessType;
 	this->port = 10087;
 
+	memset(this->field, 0, sizeof(this->field));
+
 	drawDisplayer();
 
 	this->isGameOver = false;
@@ -180,6 +182,18 @@ void GameWindow::mousePressEvent(QMouseEvent * e)
 					QObject::connect(resultWindow, &ResultNotification::exitGame, this, &GameWindow::exitGame);
 				}
 			}
+			else
+			{
+				GoChecker *myGoChecker = new GoChecker(this->field);
+				vector<QueueChess> *removedChesses = myGoChecker->getAllDeadChesses(row, column, tmpOwner);
+
+				for (auto itr = removedChesses->begin(); itr != removedChesses->end(); itr++)
+				{
+					deleteSingleChess((*itr).col, (*itr).row);
+				}
+
+				this->repaint();
+			}
 
 		} // if click position not inside the field, do nothing
 	}
@@ -322,6 +336,18 @@ void GameWindow::receiveChess(Object result)
 				QObject::connect(resultWindow, &ResultNotification::exitGame, this, &GameWindow::exitGame);
 			}
 		}
+		else
+		{
+			GoChecker *myGoChecker = new GoChecker(this->field);
+			vector<QueueChess> *removedChesses = myGoChecker->getAllDeadChesses(result["position"]["y"].toInt(), result["position"]["x"].toInt(), (Owner)result["owner"].toInt());
+
+ 			for (auto itr = removedChesses->begin(); itr != removedChesses->end(); itr++)
+			{
+				deleteSingleChess((*itr).col, (*itr).row);
+			}
+
+			this->repaint();
+		}
 	}
 }
 
@@ -385,4 +411,16 @@ bool GameWindow::isFiveSuccess(int row, int col, Owner owner)
 bool GameWindow::isInField(int row, int col)
 {
 	return (row >= 0 && row <= FIELD_GRID_NUMBER && col >= 0 && col < FIELD_GRID_NUMBER);
+}
+
+void GameWindow::deleteSingleChess(int x, int y)
+{
+	for (auto itr = this->allChesses->begin(); itr != this->allChesses->end(); itr++)
+	{
+		if ((*itr).getX() == x && (*itr).getY() == y)
+		{
+			this->allChesses->erase(itr);
+			return;
+		}
+	}
 }

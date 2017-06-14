@@ -116,6 +116,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ResultNotification.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GoChecker.cpp" />
     <ClCompile Include="gonet.cpp" />
     <ClCompile Include="JsonParser.cpp" />
     <ClCompile Include="main.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="GeneratedFiles\ui_gonet.h" />
     <ClInclude Include="GeneratedFiles\ui_MessageWindow.h" />
     <ClInclude Include="GeneratedFiles\ui_ResultNotification.h" />
+    <ClInclude Include="GoChecker.h" />
     <ClInclude Include="JsonParser.h" />
     <ClInclude Include="MessageType.h" />
     <CustomBuild Include="MessageWindow.h">

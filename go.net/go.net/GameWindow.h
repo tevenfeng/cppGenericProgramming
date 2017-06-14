@@ -16,6 +16,7 @@
 #include "DataGram.h"
 #include "MessageWindow.h"
 #include "ResultNotification.h"
+#include "GoChecker.h"
 
 using std::string;
 
@@ -93,6 +94,8 @@ private:
 
 	bool isFiveSuccess(int row, int col, Owner owner);
 	bool isInField(int row, int col);
+
+	void deleteSingleChess(int x, int y);
 
 protected:
 	void closeEvent(QCloseEvent *event);
